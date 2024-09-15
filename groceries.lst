@@ -1,0 +1,82 @@
+GAMS 45.4.0  19dc3313 Nov 27, 2023          DAX-DAC arm 64bit/macOS - 12/05/23 15:55:06 Page 1
+G e n e r a l   A l g e b r a i c   M o d e l i n g   S y s t e m
+C o m p i l a t i o n
+
+
+   1  Sets
+   2         n   foods            / pasta, sauce, apples, oranges, desert /
+   3         i   canning plants   / Seattle, San-Diego /
+   4         j   markets          / New-York, Chicago, Topeka / ;
+   5  Parameters
+   6         a(i)  capacity of plant i in cases
+   7           /    Seattle     350
+   8                San-Diego   600  /
+   9         b(j)  demand at market j in cases
+  10           /    New-York    325
+  11                Chicago     300
+  12                Topeka      275  /
+  13         cost_of_food(n)  cost of food in dollars
+  14           /    pasta       1.76
+  15                sauce       2.76
+  16                apples      2.12
+  17                oranges     4.49  /;
+  18   
+  19  Table  d(i,j)  distance in thousands of miles
+  20                    New-York       Chicago      Topeka
+  21      Seattle          2.5           1.7          1.8
+  22      San-Diego        2.5           1.8          1.4  ;
+  23  Scalar f  freight in dollars per case per thousand miles  /90/ ;
+  24  Parameter
+  25         c(i,j)  transport cost in thousands of dollars per case ;
+  26  c(i,j) = f * d(i,j) / 1000 ;
+  27  Variables
+  28       x(i,j)  shipment quantities in cases
+  29       z       total transportation costs in thousands of dollars
+  30       total_food_cost
+  31       quantity(n);
+  32   
+  33  Positive variables x quantity;
+  34  Equations
+  35       cost        define objective function
+  36       supply(i)   observe supply limit at plant i
+  37       demand(j)   satisfy demand at market j
+  38       food_cost   define objective function;
+  39  cost ..        z  =e=  sum((i,j), c(i,j)*x(i,j)) ;
+  40  supply(i) ..   sum(j, x(i,j))  =l=  a(i) ;
+  41  demand(j) ..   sum(i, x(i,j))  =g=  b(j) ;
+  42  total_food_cost(n) .. sum(n,quantity(n));
+****                $143  $81    $125    $143,141
+****  81  A '=' expected for assignment statements. Alternative
+****         assignment operators are '$=' and ':='.
+**** 125  Set is under control already
+**** 141  Symbol declared but no values have been assigned. Check for missing
+****         data definition, assignment, data loading or implicit assignment
+****         via a solve statement. Suppress with $onImplicitAssign.
+****         A wild shot: You may have spurious commas in the explanatory
+****         text of a declaration. Check symbol reference list.
+**** 143  A suffix is missing
+  43   
+  44  Model transport /all/ ;
+  45  * Solve transport using LP minimizing z ;
+  46  Solve transport using LP minimizing total_food_cost ;
+****                                                    $148,257
+**** 148  Dimension different - The symbol is referenced with more/less
+****         indices as declared
+**** 257  Solve statement not checked because of previous errors
+
+**** 7 ERROR(S)   0 WARNING(S)
+
+
+COMPILATION TIME     =        0.001 SECONDS      3 MB  45.4.0 19dc3313 DAX-DAC
+
+
+USER: GAMS Demo, for EULA and demo limitations see   G230930/0001CB-GEN
+      https://www.gams.com/latest/docs/UG%5FLicense.html         DC0000
+
+
+**** FILE SUMMARY
+
+Input      /Users/david/code/gams-examples/groceries.gams
+Output     /Users/david/code/gams-examples/groceries.lst
+
+**** USER ERROR(S) ENCOUNTERED

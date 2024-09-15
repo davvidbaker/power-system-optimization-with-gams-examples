@@ -1,0 +1,211 @@
+GAMS 45.4.0  19dc3313 Nov 27, 2023          DAX-DAC arm 64bit/macOS - 12/05/23 14:08:27 Page 1
+G e n e r a l   A l g e b r a i c   M o d e l i n g   S y s t e m
+C o m p i l a t i o n
+
+
+   1   
+   2  Sets
+   3         i   canning plants   / Seattle, San-Diego /
+   4         j   markets          / New-York, Chicago, Topeka / ;
+   5  Parameters
+   6         a(i)  capacity of plant i in cases
+   7           /    Seattle     350
+   8                San-Diego   600  /
+   9         b(j)  demand at market j in cases
+  10           /    New-York    325
+  11                Chicago     300
+  12                Topeka      275  / ;
+  13  Table  d(i,j)  distance in thousands of miles
+  14                    New-York       Chicago      Topeka
+  15      Seattle          2.5           1.7          1.8
+  16      San-Diego        2.5           1.8          1.4  ;
+  17  Scalar f  freight in dollars per case per thousand miles  /90/ ;
+  18  Parameter
+  19         c(i,j)  transport cost in thousands of dollars per case ;
+  20  c(i,j) = f * d(i,j) / 1000 ;
+  21  Variables
+  22       x(i,j)  shipment quantities in cases
+  23       z       total transportation costs in thousands of dollars ;
+  24  Positive variables x ;
+  25  Equations
+  26       cost        define objective function
+  27       supply(i)   observe supply limit at plant i
+  28       demand(j)   satisfy demand at market j ;
+  29  cost ..        z  =e=  sum((i,j), c(i,j)*x(i,j)) ;
+  30  supply(i) ..   sum(j, x(i,j))  =l=  a(i) ;
+  31  demand(j) ..   sum(i, x(i,j))  =g=  b(j) ;
+  32  Model transport /all/ ;
+  33  Solve transport using LP minimizing z ;
+
+
+COMPILATION TIME     =        0.001 SECONDS      3 MB  45.4.0 19dc3313 DAX-DAC
+GAMS 45.4.0  19dc3313 Nov 27, 2023          DAX-DAC arm 64bit/macOS - 12/05/23 14:08:27 Page 2
+G e n e r a l   A l g e b r a i c   M o d e l i n g   S y s t e m
+Equation Listing    SOLVE transport Using LP From line 33
+
+
+---- cost  =E=  define objective function
+
+cost..  - 0.225*x(Seattle,New-York) - 0.153*x(Seattle,Chicago) - 0.162*x(Seattle,Topeka) - 0.225*x(San-Diego,New-York) - 0.162*x(San-Diego,Chicago) - 0.126*x(San-Diego,Topeka) + z =E= 0 ; (LHS = 0)
+     
+
+---- supply  =L=  observe supply limit at plant i
+
+supply(Seattle)..  x(Seattle,New-York) + x(Seattle,Chicago) + x(Seattle,Topeka) =L= 350 ; (LHS = 0)
+     
+supply(San-Diego)..  x(San-Diego,New-York) + x(San-Diego,Chicago) + x(San-Diego,Topeka) =L= 600 ; (LHS = 0)
+     
+
+---- demand  =G=  satisfy demand at market j
+
+demand(New-York)..  x(Seattle,New-York) + x(San-Diego,New-York) =G= 325 ; (LHS = 0, INFES = 325 ****)
+     
+demand(Chicago)..  x(Seattle,Chicago) + x(San-Diego,Chicago) =G= 300 ; (LHS = 0, INFES = 300 ****)
+     
+demand(Topeka)..  x(Seattle,Topeka) + x(San-Diego,Topeka) =G= 275 ; (LHS = 0, INFES = 275 ****)
+     
+GAMS 45.4.0  19dc3313 Nov 27, 2023          DAX-DAC arm 64bit/macOS - 12/05/23 14:08:27 Page 3
+G e n e r a l   A l g e b r a i c   M o d e l i n g   S y s t e m
+Column Listing      SOLVE transport Using LP From line 33
+
+
+---- x  shipment quantities in cases
+
+x(Seattle,New-York)
+                (.LO, .L, .UP, .M = 0, 0, +INF, 0)
+       -0.225   cost
+        1       supply(Seattle)
+        1       demand(New-York)
+
+x(Seattle,Chicago)
+                (.LO, .L, .UP, .M = 0, 0, +INF, 0)
+       -0.153   cost
+        1       supply(Seattle)
+        1       demand(Chicago)
+
+x(Seattle,Topeka)
+                (.LO, .L, .UP, .M = 0, 0, +INF, 0)
+       -0.162   cost
+        1       supply(Seattle)
+        1       demand(Topeka)
+
+REMAINING 3 ENTRIES SKIPPED
+
+---- z  total transportation costs in thousands of dollars
+
+z
+                (.LO, .L, .UP, .M = -INF, 0, +INF, 0)
+        1       cost
+
+GAMS 45.4.0  19dc3313 Nov 27, 2023          DAX-DAC arm 64bit/macOS - 12/05/23 14:08:27 Page 4
+G e n e r a l   A l g e b r a i c   M o d e l i n g   S y s t e m
+Range Statistics    SOLVE transport Using LP From line 33
+
+
+RANGE STATISTICS (ABSOLUTE NON-ZERO FINITE VALUES)
+
+RHS       [min, max] : [ 2.750E+02, 6.000E+02] - Zero values observed as well
+Bound     [min, max] : [        NA,        NA] - Zero values observed as well
+Matrix    [min, max] : [ 1.260E-01, 1.000E+00]
+
+GAMS 45.4.0  19dc3313 Nov 27, 2023          DAX-DAC arm 64bit/macOS - 12/05/23 14:08:27 Page 5
+G e n e r a l   A l g e b r a i c   M o d e l i n g   S y s t e m
+Model Statistics    SOLVE transport Using LP From line 33
+
+
+MODEL STATISTICS
+
+BLOCKS OF EQUATIONS           3     SINGLE EQUATIONS            6
+BLOCKS OF VARIABLES           2     SINGLE VARIABLES            7
+NON ZERO ELEMENTS            19
+
+
+GENERATION TIME      =        0.075 SECONDS      4 MB  45.4.0 19dc3313 DAX-DAC
+GAMS 45.4.0  19dc3313 Nov 27, 2023          DAX-DAC arm 64bit/macOS - 12/05/23 14:08:27 Page 6
+G e n e r a l   A l g e b r a i c   M o d e l i n g   S y s t e m
+Solution Report     SOLVE transport Using LP From line 33
+
+
+               S O L V E      S U M M A R Y
+
+     MODEL   transport           OBJECTIVE  z
+     TYPE    LP                  DIRECTION  MINIMIZE
+     SOLVER  CPLEX               FROM LINE  33
+
+**** SOLVER STATUS     1 Normal Completion
+**** MODEL STATUS      1 Optimal
+**** OBJECTIVE VALUE              153.6750
+
+ RESOURCE USAGE, LIMIT          0.005 10000000000.000
+ ITERATION COUNT, LIMIT         4    2147483647
+*** This solver runs with a demo license. No commercial use.
+--- GMO setup time: 0.00s
+--- GMO memory 0.50 Mb (peak 0.50 Mb)
+--- Dictionary memory 0.00 Mb
+--- Cplex 22.1.1.0 link memory 0.00 Mb (peak 0.00 Mb)
+--- Starting Cplex
+
+
+--- LP status (1): optimal.
+--- Cplex Time: 0.00sec (det. 0.01 ticks)
+
+
+Optimal solution found
+Objective:          153.675000
+
+
+                           LOWER          LEVEL          UPPER         MARGINAL
+
+---- EQU cost                .              .              .             1.0000      
+
+  cost  define objective function
+
+---- EQU supply  observe supply limit at plant i
+
+                 LOWER          LEVEL          UPPER         MARGINAL
+
+Seattle          -INF          350.0000       350.0000         EPS         
+San-Diego        -INF          550.0000       600.0000          .          
+
+---- EQU demand  satisfy demand at market j
+
+                LOWER          LEVEL          UPPER         MARGINAL
+
+New-York       325.0000       325.0000        +INF            0.2250      
+Chicago        300.0000       300.0000        +INF            0.1530      
+Topeka         275.0000       275.0000        +INF            0.1260      
+
+---- VAR x  shipment quantities in cases
+
+                          LOWER          LEVEL          UPPER         MARGINAL
+
+Seattle  .New-York          .            50.0000        +INF             .          
+Seattle  .Chicago           .           300.0000        +INF             .          
+Seattle  .Topeka            .              .            +INF            0.0360      
+San-Diego.New-York          .           275.0000        +INF             .          
+San-Diego.Chicago           .              .            +INF            0.0090      
+San-Diego.Topeka            .           275.0000        +INF             .          
+
+                           LOWER          LEVEL          UPPER         MARGINAL
+
+---- VAR z                 -INF          153.6750        +INF             .          
+
+  z  total transportation costs in thousands of dollars
+
+
+**** REPORT SUMMARY :        0     NONOPT
+                             0 INFEASIBLE
+                             0  UNBOUNDED
+
+
+EXECUTION TIME       =        0.138 SECONDS      4 MB  45.4.0 19dc3313 DAX-DAC
+
+
+USER: GAMS Demo, for EULA and demo limitations see   G230930/0001CB-GEN
+      https://www.gams.com/latest/docs/UG%5FLicense.html         DC0000
+
+
+**** FILE SUMMARY
+
+Input      /Users/david/code/gams-examples/transport.gams
+Output     /Users/david/code/gams-examples/transport.lst
